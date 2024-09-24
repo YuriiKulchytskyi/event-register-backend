@@ -6,27 +6,15 @@ require("dotenv").config();
 
 const app = express();
 
-// Middleware
-app.use(bodyParser.json());
 
-// CORS configuration
-const corsOptions = {
-  origin: "http://localhost:5173", // Додайте фронтенд домен сюди
-  optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+app.use(cors());
+app.use(bodyParser.json());
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connected  "))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1); // Зупиняє сервер при помилці підключення
-  });
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error(err));
 
 // Event Model
 const EventSchema = new mongoose.Schema({
@@ -51,28 +39,18 @@ const ParticipantSchema = new mongoose.Schema({
 const Participant = mongoose.model("Participant", ParticipantSchema);
 
 // Routes
-
-// Get all events
 app.get("/events", async (req, res) => {
   try {
     const events = await Event.find();
     res.json(events);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error while fetching events");
+    res.status(500).send("Server error");
   }
 });
 
-// Register participant for an event
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, dateOfBirth, eventId, howHeard } = req.body;
-
-    // Validation check for required fields
-    if (!fullName || !email || !dateOfBirth || !eventId) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
     const participant = new Participant({
       fullName,
       email,
@@ -80,32 +58,21 @@ app.post("/register", async (req, res) => {
       eventId,
       howHeard,
     });
-
     await participant.save();
     res.json(participant);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error while registering participant");
+    res.status(500).send("Server error");
   }
 });
 
-// Get participants for a specific event
 app.get("/participants/:eventId", async (req, res) => {
   try {
     const participants = await Participant.find({
       eventId: req.params.eventId,
     });
-
-    if (participants.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No participants found for this event" });
-    }
-
     res.json(participants);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error while fetching participants");
+    res.status(500).send("Server error");
   }
 });
 
