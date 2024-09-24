@@ -51,6 +51,10 @@ app.get("/events", async (req, res) => {
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, dateOfBirth, eventId, howHeard } = req.body;
+
+    // Вивести тіло запиту в консоль
+    console.log(req.body);
+
     const participant = new Participant({
       fullName,
       email,
@@ -58,9 +62,11 @@ app.post("/register", async (req, res) => {
       eventId,
       howHeard,
     });
+
     await participant.save();
     res.json(participant);
   } catch (err) {
+    console.error(err); // Вивести деталі помилки в консоль
     res.status(500).send("Server error");
   }
 });
