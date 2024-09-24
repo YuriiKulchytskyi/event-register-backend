@@ -22,7 +22,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("MongoDB connected  "))
   .catch((err) => {
     console.error(err);
     process.exit(1); // Зупиняє сервер при помилці підключення
