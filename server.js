@@ -4,11 +4,12 @@ import { app } from "./app.js";
 
 const { DB_HOST, PORT = 5000 } = process.env;
 
+
 mongoose.set('strictQuery', true);
 
 mongoose.connect(DB_HOST).then(() => {
     app.listen(PORT, () => {
-        console.log("Database connected  successful")
+        console.log("Database connected successful")
         
     })
 }).catch((error) => {
