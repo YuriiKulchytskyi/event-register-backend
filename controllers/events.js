@@ -96,3 +96,15 @@ export const removeParticipantFromEvent = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getParticipantsByEventId = ctrlWrapper(async (req, res) => {
+  const { id } = req.params; 
+
+  const event = await Event.findById(id, "registeredParticipants");
+
+  if (!event) {
+    throw HttpError(404, "Event not found");
+  }
+
+  res.json(event.registeredParticipants); 
+});
