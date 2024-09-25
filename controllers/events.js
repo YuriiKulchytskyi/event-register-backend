@@ -45,3 +45,54 @@ export const updateById = ctrlWrapper(async (req, res) => {
 
   res.json(result);
 });
+
+
+export const addParticipantToEvent = async (req, res) => {
+  const { id } = req.params;
+  const { fullName, email, dateOfBirth, source } = req.body; 
+
+  try {
+    const event = await Event.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          registeredParticipants: { fullName, email, dateOfBirth, source },
+        },
+      },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    return res.status(200).json(event);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const removeParticipantFromEvent = async (req, res) => {
+  const { eventId, participantId } = req.params;
+
+  try {
+    const event = await Event.findByIdAndUpdate(
+      eventId,
+      {
+        $pull: {
+          registeredParticipants: { _id: participantId },
+        },
+      },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    return res.status(200).json(event);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
